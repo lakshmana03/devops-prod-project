@@ -1,0 +1,43 @@
+name: Production CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Show Files (Debug)
+        run: ls -la
+
+      - name: Docker Login
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+          -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest .
+
+      - name: List Images
+        run: docker images
+
+      - name: Push Image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest
+
+      - name: Verify Image Pull
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest
+
+      - name: Run Container Test
+        run: |
+          docker run -d -p 8080:80 ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest
+          sleep 5
+          curl http://localhost:8080
