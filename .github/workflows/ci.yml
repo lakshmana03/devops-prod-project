@@ -23,14 +23,14 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t wrongusername/devops-prod-app:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest .
 
       - name: List Images
         run: docker images
 
       - name: Push Image
         run: |
-          docker push wrongusername/devops-prod-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-prod-app:latest
 
       - name: Verify Image Pull
         run: |
