@@ -20,5 +20,16 @@ spec:
       containers:
       - name: my-container
         image: lakshmana0303/devops-prod-app:latest
-        ports:
-        - containerPort: 80
+        
+        env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: APP_NAME
+
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: PASSWORD
